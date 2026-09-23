@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # DevOps Practical Task: LAMP Stack Deployment & Automation
 
 | Task | Folder | What it proves |
@@ -21,3 +22,7 @@ git push -u origin main
 ```
 Consider a `.gitignore` excluding `.terraform/`, `*.tfstate*`, and any
 `.pem` key files so you never commit secrets or local Terraform state.
+=======
+# LAMP_Stack_Deployment_And_Automation
+LAMP Stack Deployment &amp; Automation
+>>>>>>> c8ed5d2a65fba353801b985770bf44fe8da4c042
