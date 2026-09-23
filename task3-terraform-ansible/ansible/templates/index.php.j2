@@ -1,0 +1,14 @@
+<?php
+$host = "localhost";
+$user = "root";
+$pass = "{{ mysql_root_password }}";
+$db   = "{{ mysql_db_name }}";
+
+$conn = @mysqli_connect($host, $user, $pass, $db);
+
+if (!$conn) {
+    echo "Hello, World! MySQL connection FAILED: " . mysqli_connect_error();
+} else {
+    echo "Hello, World! Your MySQL connection is successful.";
+    mysqli_close($conn);
+}

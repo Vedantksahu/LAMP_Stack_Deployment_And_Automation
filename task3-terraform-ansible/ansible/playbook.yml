@@ -1,0 +1,66 @@
+---
+- name: Deploy LAMP stack on EC2
+  hosts: lamp
+  become: true
+  vars:
+    mysql_root_password: "ChangeMe123!"
+    mysql_db_name: lampdb
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Nginx, PHP-FPM, MySQL server, and PHP MySQL extension
+      apt:
+        name:
+          - nginx
+          - php-fpm
+          - php-mysql
+          - mysql-server
+          - python3-pymysql   # needed by Ansible's mysql_* modules
+        state: present
+
+    - name: Ensure services start on boot and are running
+      service:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop:
+        - nginx
+        - php8.1-fpm
+        - mysql
+
+    - name: Set MySQL root password
+      community.mysql.mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        state: present
+
+    - name: Create application database
+      community.mysql.mysql_db:
+        name: "{{ mysql_db_name }}"
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        state: present
+
+    - name: Deploy Nginx site config
+      template:
+        src: templates/nginx-lamp.conf.j2
+        dest: /etc/nginx/sites-available/default
+      notify: Reload nginx
+
+    - name: Deploy index.php
+      template:
+        src: templates/index.php.j2
+        dest: /var/www/html/index.php
+        owner: www-data
+        group: www-data
+
+  handlers:
+    - name: Reload nginx
+      service:
+        name: nginx
+        state: reloaded
